@@ -29,6 +29,13 @@ function closeOverlay(e) {
   if (e.target.classList.contains("overlay")) overlay.classList.add("hide");
 }
 
+function hideOverlay(title, author, pages, overlay) {
+  overlay.classList.add("hide");
+  title.value = "";
+  author.value = "";
+  pages.value = "";
+}
+
 function addBook(e) {
   e.preventDefault();
   const title = inputBookTitle.value;
@@ -40,7 +47,7 @@ function addBook(e) {
   //if not add book to array
   addBookToLibrary(title, author, pages, isRead);
   showBook();
-  overlay.classList.add("hide");
+  hideOverlay(inputBookTitle, inputBookAuthor, inputBookPages, overlay);
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -61,7 +68,7 @@ function checkIfExists(title) {
   }
 }
 
-function createCard(name, author, pages, read, index) {
+function createCard(name, author, pages, read) {
   //Create element
   const book = document.createElement("div");
   const bookInfo = document.createElement("div");
@@ -72,7 +79,6 @@ function createCard(name, author, pages, read, index) {
   const buttonRemove = document.createElement("button");
 
   book.classList.add("book", "book-card");
-  book.dataset.index = index;
   //BOOK INFO
   bookInfo.classList.add("book-info");
   //BOOK NAME
@@ -99,31 +105,32 @@ function createCard(name, author, pages, read, index) {
 
   //event listeners
   buttonRead.addEventListener("click", function (e) {
-    log(e.target.parentElement.dataset.index);
-    const index = e.target.parentElement.dataset.index;
+    const title = e.target.parentElement.firstChild.firstChild.textContent;
+    const index = myLibrary.findIndex(book=> `"${book.title}"` === title )
+    log(index)
     log(myLibrary[index].isRead);
-    if(e.target.classList.contains("red")){
+    if (e.target.classList.contains("red")) {
       buttonRead.classList.remove("red");
-      buttonRead.classList.add("green");  
-      buttonRead.textContent = "Read"
+      buttonRead.classList.add("green");
+      buttonRead.textContent = "Read";
       myLibrary[index].isRead = true;
-    }else{
+    } else {
       buttonRead.classList.remove("green");
       buttonRead.classList.add("red");
       buttonRead.textContent = "Not read";
       myLibrary[index].isRead = false;
     }
   });
-  buttonRemove.addEventListener("click", function(e){
+  buttonRemove.addEventListener("click", function (e) {
     log(e.target.parentElement.dataset.index);
     let bookTitle = e.target.parentElement.firstChild.firstChild.textContent;
-    log(bookTitle)
-    log(myLibrary[0].title)
+    log(bookTitle);
+    log(myLibrary[0].title);
     const element = e.target.parentElement;
     element.remove();
-    myLibrary = myLibrary.filter(book => `"${book.title}"` != bookTitle);
-    log(myLibrary)
-  })
+    myLibrary = myLibrary.filter((book) => `"${book.title}"` != bookTitle);
+    log(myLibrary);
+  });
 }
 
 function showBook() {
@@ -143,11 +150,19 @@ class Book {
   }
 }
 
-// addBookToLibrary(
-//   "The Lord of the Rings: The fellowship of the ring",
-//   "J. R. R. Tolkien",
-//   432,
-//   true
-// );
-// addBookToLibrary("Well Behaved Wives", "Amy Sue Nathan", 319, false);
-// updateDisplay()
+
+// The Lord of the Rings: The fellowship of the ring
+// J. R. R. Tolkien
+// 432
+
+// Well Behaved Wives
+// Amy Sue Nathan
+// 319
+
+// Fairy Tale
+// Stephen King
+// 608
+
+// Confidence Man: The Making of Donald Trump and the Breaking of America
+// Maggie Haberman
+// 608
