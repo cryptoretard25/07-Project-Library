@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Library</title>
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="script.js"></script>
+</head>
+
+<body>
+  <div class="grid-container">
+    <div class="header">
+      <h1 class="title">Library</h1>
+      <button class="log-button">Log In</button>
+    </div>
+    <div class="main-container">
+      <div class="menu">
+        <button class="add-book">+ Add book</button>
+      </div>
+      <div class="main">
+        <!-- <div class="book">
+          <div class="book-info">
+            <p class="book-name"> "Well Behaved Wives" </p>
+            <p class="book-author">Amy Sue Nathan</p>
+            <p class="book-pages">319 pages</p>
+          </div>
+          <button class="book-button red read">Not read</button>
+          <button class="book-button remove">Remove</button>
+        </div> -->
+      </div>
+    </div>
+    <div class="footer">
+      <h3>Copyright 2022 © cryptoretard22</h3>
+    </div>
+  </div>
+  <div class="overlay hide">
+    <form id="addBookForm">
+      <div class="book add-book-menu">
+        <h3>Add new book</h3>
+        <div class="error hide"></div>
+        <div class="book-info"">
+          <input class=" input" type="text" id="title" placeholder="Title" required="" maxlength="100">
+          <input class="input" type="text" id="author" placeholder="Author" required="" maxlength="100">
+          <input class="input" type="number" id="pages" placeholder="Pages" required="" max="10000">
+        </div>
+        <div class="is-read">
+          <label for="is-read">Have you read it?</label>
+          <input class="checkbox" type="checkbox" id="isRead" value="unchecked">
+        </div>
+        <button type="submit" class="book-button dark" id="confirm">Submit</button>
+      </div>
+    </form>
+  </div>
+</body>
+
+</html>
