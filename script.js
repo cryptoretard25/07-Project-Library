@@ -1,13 +1,14 @@
 const { log } = console;
-
+//------------------------------------------------------------------------------------------------------------------------
 let myLibrary = [];
+//Storage getter
 const getMyLibrary = JSON.parse(localStorage.getItem("myLibrary"))
 if(getMyLibrary&&getMyLibrary.length>0){
   myLibrary=getMyLibrary;
 }
 
-
-//INTERFACE
+//------------------------------------------------------------------------------------------------------------------------
+//Add book div interface
 const overlay = document.querySelector(".overlay");
 const addBookButton = document.querySelector("button.add-book");
 const inputBookTitle = document.querySelector("input#title");
@@ -17,52 +18,34 @@ const inputBookIsRead = document.querySelector("#isRead");
 const submitBook = document.querySelector("button#confirm");
 const overlayError = document.querySelector(".error");
 const main = document.querySelector("div.main");
-
+//------------------------------------------------------------------------------------------------------------------------
+//Onclick overlay listeners
 overlay.addEventListener("click", closeOverlay);
 addBookButton.addEventListener("click", openOverlay);
-submitBook.addEventListener("click", addBook);
-
-let isRead = false;
-inputBookIsRead.addEventListener("click", function () {
-  isRead = this.checked ? true : false;
-});
-//----------------------------------------------------------------------------------------------------
+//Onclick handlers
 function openOverlay() {
   overlay.classList.remove("hide");
 }
-
 function closeOverlay(e) {
   if (e.target.classList.contains("overlay")) overlay.classList.add("hide");
 }
-
 function hideOverlay(title, author, pages, overlay) {
   overlay.classList.add("hide");
   title.value = "";
   author.value = "";
   pages.value = "";
 }
-
-function addBook(e) {
-  e.preventDefault();
-  const title = inputBookTitle.value;
-  const author = inputBookAuthor.value;
-  const pages = +inputBookPages.value;
-  if (!title || !author || !pages) return;
-  //check if book already exists
-  if (checkIfExists(title)) return;
-  //if not add book to array
-  addBookToLibrary(title, author, pages, isRead);
-  localStorage.setItem("myLibrary", JSON.stringify(myLibrary));
-  showBook();
-  hideOverlay(inputBookTitle, inputBookAuthor, inputBookPages, overlay);
-}
-
-//----------------------------------------------------------------------------------------------------
-//Inner functions
+//------------------------------------------------------------------------------------------------------------------------
+//Checkbox updater
+let isRead = false;
+inputBookIsRead.addEventListener("click", function () {
+  isRead = this.checked ? true : false;
+});
+//------------------------------------------------------------------------------------------------------------------------
+//Internal functions
 function addBookToLibrary(title, author, pages, isRead) {
   myLibrary.push(new Book(title, author, pages, isRead));
 }
-
 function checkIfExists(title) {
   if (myLibrary.find((book) => book.title === title)) {
     overlayError.classList.remove("hide");
@@ -74,7 +57,15 @@ function checkIfExists(title) {
     return true;
   }
 }
+function showBook() {
+  main.innerHTML = "";
+  myLibrary.forEach(function (book) {
+    createCard(book.title, book.author, book.pages, book.isRead);
+  });
+}
 
+//------------------------------------------------------------------------------------------------------------------------
+//Create book card element
 function createCard(name, author, pages, read) {
   //Create element
   const book = document.createElement("div");
@@ -142,15 +133,30 @@ function createCard(name, author, pages, read) {
   book.append(bookInfo, buttonRead, buttonRemove);
   bookInfo.append(bookName, bookAuthor, bookPages);
 }
-
-function showBook() {
-  main.innerHTML = "";
-  myLibrary.forEach(function (book) {
-    createCard(book.title, book.author, book.pages, book.isRead);
-  });
+//------------------------------------------------------------------------------------------------------------------------
+//ADD book AND DISPLAY ON THE SCREEN
+submitBook.addEventListener("click", addBook);
+function addBook(e) {
+  e.preventDefault();
+  //Set variables
+  const title = inputBookTitle.value;
+  const author = inputBookAuthor.value;
+  const pages = +inputBookPages.value;
+  //If one of the field is empty break
+  if (!title || !author || !pages) return;
+  //Check if book already exists if true break
+  if (checkIfExists(title)) return;
+  //Create new Book instance push into myLibrary array
+  addBookToLibrary(title, author, pages, isRead);
+  //Update local storage
+  localStorage.setItem("myLibrary", JSON.stringify(myLibrary));
+  //Show book on the main page
+  showBook();
+  //Hide overlay 
+  hideOverlay(inputBookTitle, inputBookAuthor, inputBookPages, overlay);
 }
-
 //----------------------------------------------------------------------------------------------------
+//Book constructor
 class Book {
   constructor(title, author, pages, isRead) {
     this.title = title;
@@ -159,24 +165,9 @@ class Book {
     this.isRead = isRead;
   }
 }
-
+//----------------------------------------------------------------------------------------------------
 //STORAGE
 showBook();
 //Update obj prototype after getting from storage
 myLibrary.forEach(book=>book.__proto__= new Book)
-
-// The Lord of the Rings: The fellowship of the ring
-// J. R. R. Tolkien
-// 432
-
-// Well Behaved Wives
-// Amy Sue Nathan
-// 319
-
-// Fairy Tale
-// Stephen King
-// 608
-
-// Confidence Man: The Making of Donald Trump and the Breaking of America
-// Maggie Haberman
-// 608
+//----------------------------------------------------------------------------------------------------
