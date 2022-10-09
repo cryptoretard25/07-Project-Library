@@ -90,24 +90,17 @@ function createCard(name, author, pages, read) {
   //BOOK PAGES
   bookPages.classList.add("book-pages");
   bookPages.textContent = `${pages} pages`;
+
   //BUTTON READ
   buttonRead.classList.add("book-button", "read");
   read
     ? ((buttonRead.textContent = "Read"), buttonRead.classList.add("green"))
     : ((buttonRead.textContent = "Not read"), buttonRead.classList.add("red"));
-  //BUTTON REMOVE
-  buttonRemove.classList.add("book-button", "remove");
-  buttonRemove.textContent = "Remove";
-  //CONSTRUCT CARD
-  main.appendChild(book);
-  book.append(bookInfo, buttonRead, buttonRemove);
-  bookInfo.append(bookName, bookAuthor, bookPages);
-
-  //event listeners
+  //READ CLICK HANDLER
   buttonRead.addEventListener("click", function (e) {
-    const title = e.target.parentElement.firstChild.firstChild.textContent;
-    const index = myLibrary.findIndex(book=> `"${book.title}"` === title )
-    log(index)
+    const title = bookName.textContent;
+    const index = myLibrary.findIndex((book) => `"${book.title}"` === title);
+    log(index);
     log(myLibrary[index].isRead);
     if (e.target.classList.contains("red")) {
       buttonRead.classList.remove("red");
@@ -121,16 +114,23 @@ function createCard(name, author, pages, read) {
       myLibrary[index].isRead = false;
     }
   });
+  //BUTTON REMOVE
+  buttonRemove.classList.add("book-button", "remove");
+  buttonRemove.textContent = "Remove";
+  //REMOVE CLICK HANDLER
   buttonRemove.addEventListener("click", function (e) {
-    log(e.target.parentElement.dataset.index);
-    let bookTitle = e.target.parentElement.firstChild.firstChild.textContent;
-    log(bookTitle);
-    log(myLibrary[0].title);
+    const title = bookName.textContent;
+    const index = myLibrary.findIndex((book) => `"${book.title}"` === title);
+    log(index);
     const element = e.target.parentElement;
     element.remove();
-    myLibrary = myLibrary.filter((book) => `"${book.title}"` != bookTitle);
-    log(myLibrary);
+    myLibrary.splice(index, 1);
   });
+
+  //CONSTRUCT CARD
+  main.appendChild(book);
+  book.append(bookInfo, buttonRead, buttonRemove);
+  bookInfo.append(bookName, bookAuthor, bookPages);
 }
 
 function showBook() {
@@ -149,7 +149,6 @@ class Book {
     this.isRead = isRead;
   }
 }
-
 
 // The Lord of the Rings: The fellowship of the ring
 // J. R. R. Tolkien
