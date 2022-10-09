@@ -2,11 +2,10 @@ const { log } = console;
 //------------------------------------------------------------------------------------------------------------------------
 let myLibrary = [];
 //Storage getter
-const getMyLibrary = JSON.parse(localStorage.getItem("myLibrary"))
-if(getMyLibrary&&getMyLibrary.length>0){
-  myLibrary=getMyLibrary;
+const getMyLibrary = JSON.parse(localStorage.getItem("myLibrary"));
+if (getMyLibrary && getMyLibrary.length > 0) {
+  myLibrary = getMyLibrary;
 }
-
 //------------------------------------------------------------------------------------------------------------------------
 //Add book div interface
 const overlay = document.querySelector(".overlay");
@@ -28,12 +27,6 @@ function openOverlay() {
 }
 function closeOverlay(e) {
   if (e.target.classList.contains("overlay")) overlay.classList.add("hide");
-}
-function hideOverlay(title, author, pages, overlay) {
-  overlay.classList.add("hide");
-  title.value = "";
-  author.value = "";
-  pages.value = "";
 }
 //------------------------------------------------------------------------------------------------------------------------
 //Checkbox updater
@@ -63,7 +56,12 @@ function showBook() {
     createCard(book.title, book.author, book.pages, book.isRead);
   });
 }
-
+function hideOverlay(title, author, pages, overlay) {
+  overlay.classList.add("hide");
+  title.value = "";
+  author.value = "";
+  pages.value = "";
+}
 //------------------------------------------------------------------------------------------------------------------------
 //Create book card element
 function createCard(name, author, pages, read) {
@@ -152,7 +150,7 @@ function addBook(e) {
   localStorage.setItem("myLibrary", JSON.stringify(myLibrary));
   //Show book on the main page
   showBook();
-  //Hide overlay 
+  //Hide overlay
   hideOverlay(inputBookTitle, inputBookAuthor, inputBookPages, overlay);
 }
 //----------------------------------------------------------------------------------------------------
@@ -169,5 +167,5 @@ class Book {
 //STORAGE
 showBook();
 //Update obj prototype after getting from storage
-myLibrary.forEach(book=>book.__proto__= new Book)
+myLibrary.forEach((book) => (book.__proto__ = new Book()));
 //----------------------------------------------------------------------------------------------------
