@@ -1,6 +1,11 @@
 const { log } = console;
-let isRead = false;
+
 let myLibrary = [];
+const getMyLibrary = JSON.parse(localStorage.getItem("myLibrary"))
+if(getMyLibrary&&getMyLibrary.length>0){
+  myLibrary=getMyLibrary;
+}
+
 
 //INTERFACE
 const overlay = document.querySelector(".overlay");
@@ -17,6 +22,7 @@ overlay.addEventListener("click", closeOverlay);
 addBookButton.addEventListener("click", openOverlay);
 submitBook.addEventListener("click", addBook);
 
+let isRead = false;
 inputBookIsRead.addEventListener("click", function () {
   isRead = this.checked ? true : false;
 });
@@ -46,6 +52,7 @@ function addBook(e) {
   if (checkIfExists(title)) return;
   //if not add book to array
   addBookToLibrary(title, author, pages, isRead);
+  localStorage.setItem("myLibrary", JSON.stringify(myLibrary));
   showBook();
   hideOverlay(inputBookTitle, inputBookAuthor, inputBookPages, overlay);
 }
@@ -113,7 +120,9 @@ function createCard(name, author, pages, read) {
       buttonRead.textContent = "Not read";
       myLibrary[index].isRead = false;
     }
+    localStorage.setItem("myLibrary", JSON.stringify(myLibrary));
   });
+
   //BUTTON REMOVE
   buttonRemove.classList.add("book-button", "remove");
   buttonRemove.textContent = "Remove";
@@ -125,6 +134,7 @@ function createCard(name, author, pages, read) {
     const element = e.target.parentElement;
     element.remove();
     myLibrary.splice(index, 1);
+    localStorage.setItem("myLibrary", JSON.stringify(myLibrary));
   });
 
   //CONSTRUCT CARD
@@ -135,8 +145,8 @@ function createCard(name, author, pages, read) {
 
 function showBook() {
   main.innerHTML = "";
-  myLibrary.forEach(function (book, index) {
-    createCard(book.title, book.author, book.pages, book.isRead, index);
+  myLibrary.forEach(function (book) {
+    createCard(book.title, book.author, book.pages, book.isRead);
   });
 }
 
@@ -149,6 +159,11 @@ class Book {
     this.isRead = isRead;
   }
 }
+
+//STORAGE
+showBook();
+//Update obj prototype after getting from storage
+myLibrary.forEach(book=>book.__proto__= new Book)
 
 // The Lord of the Rings: The fellowship of the ring
 // J. R. R. Tolkien

@@ -32,7 +32,7 @@
 h1.title {
   font-size: 3.5rem;
   flex: 1;
-  color: black;
+  color: white;
   letter-spacing: 2px;
   font-weight: 700;
 }
@@ -95,7 +95,12 @@ body {
   padding: 0 2rem;
   display: flex;
   align-items: center;
-  background-color: var(--amber-500);
+  justify-content: center;
+  background-color: var(--amber-900);
+}
+.container{
+  width: min(var(--grid-container-width), 100%);
+  display: flex;
 }
 .main-container {
   width: min(var(--grid-container-width), 100%);
@@ -114,7 +119,7 @@ body {
   grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
   grid-auto-rows: minmax(30rem, 1fr);
   gap: 1.5rem;
-  padding: 1.5rem 0;
+  padding: 1.5rem 1.5rem;
 
 }
 /* BOOKS */
@@ -145,7 +150,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--amber-500);
+  background-color: var(--amber-100);
 }
 /* ADD BOOK MENU */
 .overlay {
