@@ -53,7 +53,7 @@ function checkIfExists(title) {
 function showBook() {
   main.innerHTML = "";
   myLibrary.forEach(function (book) {
-    createCard(book.title, book.author, book.pages, book.isRead);
+    book.createCard();
   });
 }
 function hideOverlay(title, author, pages, overlay) {
@@ -61,75 +61,6 @@ function hideOverlay(title, author, pages, overlay) {
   title.value = "";
   author.value = "";
   pages.value = "";
-}
-//------------------------------------------------------------------------------------------------------------------------
-//Create book card element
-function createCard(name, author, pages, read) {
-  //Create element
-  const book = document.createElement("div");
-  const bookInfo = document.createElement("div");
-  const bookName = document.createElement("p");
-  const bookAuthor = document.createElement("p");
-  const bookPages = document.createElement("p");
-  const buttonRead = document.createElement("button");
-  const buttonRemove = document.createElement("button");
-
-  book.classList.add("book", "book-card");
-  //BOOK INFO
-  bookInfo.classList.add("book-info");
-  //BOOK NAME
-  bookName.classList.add("book-name");
-  bookName.textContent = `"${name}"`;
-  //BOOK AUTHOR
-  bookAuthor.classList.add("book-author");
-  bookAuthor.textContent = author;
-  //BOOK PAGES
-  bookPages.classList.add("book-pages");
-  bookPages.textContent = `${pages} pages`;
-
-  //BUTTON READ
-  buttonRead.classList.add("book-button", "read");
-  read
-    ? ((buttonRead.textContent = "Read"), buttonRead.classList.add("green"))
-    : ((buttonRead.textContent = "Not read"), buttonRead.classList.add("red"));
-  //READ CLICK HANDLER
-  buttonRead.addEventListener("click", function (e) {
-    const title = bookName.textContent;
-    const index = myLibrary.findIndex((book) => `"${book.title}"` === title);
-    log(index);
-    log(myLibrary[index].isRead);
-    if (e.target.classList.contains("red")) {
-      buttonRead.classList.remove("red");
-      buttonRead.classList.add("green");
-      buttonRead.textContent = "Read";
-      myLibrary[index].isRead = true;
-    } else {
-      buttonRead.classList.remove("green");
-      buttonRead.classList.add("red");
-      buttonRead.textContent = "Not read";
-      myLibrary[index].isRead = false;
-    }
-    localStorage.setItem("myLibrary", JSON.stringify(myLibrary));
-  });
-
-  //BUTTON REMOVE
-  buttonRemove.classList.add("book-button", "remove");
-  buttonRemove.textContent = "Remove";
-  //REMOVE CLICK HANDLER
-  buttonRemove.addEventListener("click", function (e) {
-    const title = bookName.textContent;
-    const index = myLibrary.findIndex((book) => `"${book.title}"` === title);
-    log(index);
-    const element = e.target.parentElement;
-    element.remove();
-    myLibrary.splice(index, 1);
-    localStorage.setItem("myLibrary", JSON.stringify(myLibrary));
-  });
-
-  //CONSTRUCT CARD
-  main.appendChild(book);
-  book.append(bookInfo, buttonRead, buttonRemove);
-  bookInfo.append(bookName, bookAuthor, bookPages);
 }
 //------------------------------------------------------------------------------------------------------------------------
 //ADD book AND DISPLAY ON THE SCREEN
@@ -162,10 +93,83 @@ class Book {
     this.pages = pages;
     this.isRead = isRead;
   }
+  createCard() {
+    const name = this.title;
+    const author = this.author;
+    const pages = this.pages;
+    const read = this.isRead;
+    //Create element
+    const book = document.createElement("div");
+    const bookInfo = document.createElement("div");
+    const bookName = document.createElement("p");
+    const bookAuthor = document.createElement("p");
+    const bookPages = document.createElement("p");
+    const buttonRead = document.createElement("button");
+    const buttonRemove = document.createElement("button");
+  
+    book.classList.add("book", "book-card");
+    //BOOK INFO
+    bookInfo.classList.add("book-info");
+    //BOOK NAME
+    bookName.classList.add("book-name");
+    bookName.textContent = `"${name}"`;
+    //BOOK AUTHOR
+    bookAuthor.classList.add("book-author");
+    bookAuthor.textContent = author;
+    //BOOK PAGES
+    bookPages.classList.add("book-pages");
+    bookPages.textContent = `${pages} pages`;
+  
+    //BUTTON READ
+    buttonRead.classList.add("book-button", "read");
+    read
+      ? ((buttonRead.textContent = "Read"), buttonRead.classList.add("green"))
+      : ((buttonRead.textContent = "Not read"), buttonRead.classList.add("red"));
+    //READ CLICK HANDLER
+    buttonRead.addEventListener("click", function (e) {
+      const title = bookName.textContent;
+      const index = myLibrary.findIndex((book) => `"${book.title}"` === title);
+      log(index);
+      log(myLibrary[index].isRead);
+      if (e.target.classList.contains("red")) {
+        buttonRead.classList.remove("red");
+        buttonRead.classList.add("green");
+        buttonRead.textContent = "Read";
+        myLibrary[index].isRead = true;
+      } else {
+        buttonRead.classList.remove("green");
+        buttonRead.classList.add("red");
+        buttonRead.textContent = "Not read";
+        myLibrary[index].isRead = false;
+      }
+      localStorage.setItem("myLibrary", JSON.stringify(myLibrary));
+    });
+  
+    //BUTTON REMOVE
+    buttonRemove.classList.add("book-button", "remove");
+    buttonRemove.textContent = "Remove";
+    //REMOVE CLICK HANDLER
+    buttonRemove.addEventListener("click", function (e) {
+      const title = bookName.textContent;
+      const index = myLibrary.findIndex((book) => `"${book.title}"` === title);
+      log(index);
+      const element = e.target.parentElement;
+      element.remove();
+      myLibrary.splice(index, 1);
+      localStorage.setItem("myLibrary", JSON.stringify(myLibrary));
+    });
+  
+    //CONSTRUCT CARD
+    main.appendChild(book);
+    book.append(bookInfo, buttonRead, buttonRemove);
+    bookInfo.append(bookName, bookAuthor, bookPages);
+  }
 }
 //----------------------------------------------------------------------------------------------------
 //STORAGE
+myLibrary.forEach((book) => {
+  book.__proto__ = Book.prototype;
+});
 showBook();
 //Update obj prototype after getting from storage
-myLibrary.forEach((book) => (book.__proto__ = new Book()));
 //----------------------------------------------------------------------------------------------------
