@@ -1,204 +1,235 @@
 const { log } = console;
 
+class Book {
+  constructor(title, author, pages, read) {
+    this.title = title;
+    this.author = author;
+    this.pages = pages;
+    this.read = read;
+  }
+  getTitle() {
+    return this.title;
+  }
+  setTitle(title) {
+    this.title = title;
+  }
+  getAuthor() {
+    return this.author;
+  }
+  setAuthor(author) {
+    this.author = author;
+  }
+  getPages() {
+    return `${this.pages} pages`;
+  }
+  setPages(pages) {
+    this.pages = pages;
+  }
+  getRead() {
+    return this.read;
+  }
+  setRead() {
+    this.read === true ? (this.read = false) : (this.read = true);
+  }
+}
+
 class Library {
   constructor() {
     this.books = [];
   }
-  getBooks = ()=>{
-    const getMyBooks = JSON.parse(localStorage.getItem("Books"));
-    if (getMyBooks && getMyBooks.length > 0) {
-      this.books = getMyBooks;
-    }
+  setBooks(array) {
+    this.books = array;
   }
-  setBooks = () => {
-    localStorage.setItem("Books", JSON.stringify(this.books));
+  getBooks() {
+    return this.books;
+  }
+  contains(title) {
+    return this.books.some((book) => book.title === title);
+  }
+  getBook(title) {
+    return this.books.find((book) => book.title === title);
+  }
+  addBook(newBook) {
+    if (this.books.find((book) => book.title === newBook.title)) return;
+    this.books.push(newBook);
+  }
+  deleteBook(title) {
+    this.books = this.books.filter((book) => book.title !== title);
   }
 }
 
-class Book {
-  constructor(title, author, pages, isRead) {
-    this.isRead = isRead;
-    this.title = title;
-    this.author = author;
-    this.pages = pages;
-    this.main = document.querySelector("div.main");
-    this.book = document.createElement("div");
-    this.bookInfo = document.createElement("div");
-    this.bookName = document.createElement("p");
-    this.bookAuthor = document.createElement("p");
-    this.bookPages = document.createElement("p");
-    this.buttonRead = document.createElement("button");
-    this.buttonRemove = document.createElement("button");
-
-    this.buttonRead.addEventListener("click", this.readBtnHandler);
-    this.buttonRemove.addEventListener("click", this.removeBtnHandler);
+class Storage {
+  static saveLibrary(data) {
+    localStorage.setItem("Library", JSON.stringify(data));
   }
-  //--------------------------------------------------------------------------------------------------------
-  // HANDLERS
-  //--------------------------------------------------------------------------------------------------------
-  removeBtnHandler = (e) => {
-    const title = this.bookName.textContent;
-    const index = library.books.findIndex(
-      (book) => `"${book.title}"` === title
+  static getLibrary() {
+    const library = Object.assign(
+      new Library(),
+      JSON.parse(localStorage.getItem("Library"))
     );
-    log(index);
-    const element = e.target.parentElement;
-    element.remove();
-    library.books.splice(index, 1);
-    //library.setBooks();
-  };
-  readBtnHandler = (e) => {
-    const read = this.buttonRead;
-    if (e.target.classList.contains("red")) {
-      read.classList.remove("red");
-      read.classList.add("green");
-      read.textContent = "Read";
-      this.isRead = true;
-    } else {
-      read.classList.remove("green");
-      read.classList.add("red");
-      read.textContent = "Not read";
-      this.isRead = false;
-    }
-    //library.setBooks();
-  };
-  //--------------------------------------------------------------------------------------------------------
-  //METHODS
-  //--------------------------------------------------------------------------------------------------------
-  ifRead() {
-    this.isRead
-      ? ((this.buttonRead.textContent = "Read"),
-        this.buttonRead.classList.add("green"))
-      : ((this.buttonRead.textContent = "Not read"),
-        this.buttonRead.classList.add("red"));
-  }
-  createCard() {
-    this.constructCard();
-    this.main.appendChild(this.book);
-    this.book.append(this.bookInfo, this.buttonRead, this.buttonRemove);
-    this.bookInfo.append(this.bookName, this.bookAuthor, this.bookPages);
-  }
-  constructCard(){
-    this.book.classList.add("book", "book-card");
-    //BOOK INFO
-    this.bookInfo.classList.add("book-info");
-    //BOOK NAME
-    this.bookName.classList.add("book-name");
-    this.bookName.textContent = `"${this.title}"`;
-    //BOOK AUTHOR
-    this.bookAuthor.classList.add("book-author");
-    this.bookAuthor.textContent = this.author;
-    //BOOK PAGES
-    this.bookPages.classList.add("book-pages");
-    this.bookPages.textContent = `${this.pages} pages`;
-    //BUTTON READ
-    this.buttonRead.classList.add("book-button", "read");
-    this.ifRead();
-    //BUTTON REMOVE
-    this.buttonRemove.classList.add("book-button", "remove");
-    this.buttonRemove.textContent = "Remove";
+    library.setBooks(
+      library.getBooks().map((book) => Object.assign(new Book(), book))
+    );
+    return library;
   }
 }
 
-class Display {
-  constructor() {
-    this._isRead = false;
-    this.overlay = document.querySelector(".overlay");
-    this.addBookButton = document.querySelector("button.add-book");
-    this.inputTitle = document.querySelector("input#title");
-    this.inputAuthor = document.querySelector("input#author");
-    this.inputPages = document.querySelector("input#pages");
-    this.inputBookIsRead = document.querySelector("#isRead");
-    this.add = document.querySelector("button#confirm");
-    this.overlayError = document.querySelector(".error");
-    this.main = document.querySelector("div.main");
+class DOM {
+  static main = document.querySelector("div.main");
 
-    //ADD LISTENERS
-    this.addBookButton.addEventListener("click", this.openOverlay);
-    this.overlay.addEventListener("click", this.closeOverlay);
-    this.inputBookIsRead.addEventListener("click", this.isReaded);
-    this.add.addEventListener("click", this.displayBook);
-  }
-  set isRead(bool) {
-    this._isRead = bool;
-  }
-  get isRead() {
-    return this._isRead;
-  }
-  //--------------------------------------------------------------------------------------------------------
-  // HANDLERS
-  //--------------------------------------------------------------------------------------------------------
-  openOverlay = () => {
-    //FUNCTION DECLARATION THIS = clicked element, thats why we use arrows
-    this.overlay.classList.remove("hide");
-  };
-  closeOverlay = (e) => {
-    if (e.target.classList.contains("overlay"))
-      this.overlay.classList.add("hide");
-  };
-  isReaded = (e) => {
-    const chekbox = e.target;
-    this.isRead = chekbox.checked ? true : false;
-  };
-  displayBook = (e) => {
-    e.preventDefault();
-    const title = this.inputTitle.value;
-    const author = this.inputAuthor.value;
-    const pages = +this.inputPages.value;
-    if (!title || !author || !pages) return;
-    if (this.isExists()) return;
-    this.addBook();
-    this.showBook();
-    this.hideOverlay();
-  };
-  //--------------------------------------------------------------------------------------------------------
-  // METHODS
-  //--------------------------------------------------------------------------------------------------------
-  hideOverlay(){
-    this.overlay.classList.add("hide");
-    this.inputTitle.value = "";
-    this.inputAuthor.value = "";
-    this.inputPages.value = "";
-  };
-  isExists(){
-    if (library.books.find((book) => book.title === this.inputTitle.value)) {
-      this.overlayError.classList.remove("hide");
-      this.overlayError.classList.add("red-font");
-      this.overlayError.textContent = "This book is already exists!";
-      setTimeout(() => {
-        this.overlayError.classList.add("hide");
-      }, 3000);
-      return true;
+  static ui() {
+    const overlay = document.querySelector(".overlay");
+    const openOverlay = function(){
+      overlay.classList.remove("hide");
     }
-  };
-  showBook(){
+    const closeOverlay = function(){
+      overlay.classList.add("hide");
+    }
+
+    const addBookButton = (() => {
+      const addBookBtn = document.querySelector("button.add-book");
+      const listeners = (() => {
+        addBookBtn.addEventListener("click", openOverlay);
+        overlay.addEventListener("click", (e) => {
+          if (e.target.classList.contains("overlay")) {
+            closeOverlay();
+          }
+        });
+      })();
+    })();
+
+    const addBookMenu = (() => {
+      const inputTitle = document.querySelector("input#title");
+      const inputAuthor = document.querySelector("input#author");
+      const inputPages = document.querySelector("input#pages");
+      const inputRead = document.querySelector("#isRead");
+      const submit = document.querySelector("button#confirm");
+      const error = document.querySelector(".error");
+
+      const isRead = () => inputRead.checked;
+
+      const clearFields = () => {
+        inputTitle.value = "";
+        inputAuthor.value = "";
+        inputPages.value = "";
+        inputRead.checked = false;
+      };
+
+      const addBook = (e) => {
+        e.preventDefault();
+
+        const title = inputTitle.value;
+        const author = inputAuthor.value;
+        const pages = inputPages.value;
+        const read = isRead();
+
+        if (!title || !author || !pages) return;
+        if (library.contains(title)) {
+          error.textContent = "This book is already exists!";
+          error.classList.add("red-font");
+          error.classList.remove("hide");
+          setTimeout(() => {
+            error.classList.add("hide");
+          }, 3000);
+        }
+
+        library.addBook(new Book(`"${title}"`, author, pages, read));
+        this.updateDOM();
+        clearFields();
+        closeOverlay();
+        //Storage
+        Storage.saveLibrary(library)
+        log(library);
+      };
+
+      const listeners = (() => {
+        submit.addEventListener("click", addBook);
+      })();
+    })();
+  }
+
+  static bookToDOM(book) {
+    const bookCard = document.createElement("div");
+    const info = document.createElement("div");
+    const name = document.createElement("p");
+    const author = document.createElement("p");
+    const pages = document.createElement("p");
+    const read = document.createElement("button");
+    const remove = document.createElement("button");
+
+    const properties = (() => {
+      bookCard.classList.add("book", "book-card");
+      info.className = "book-info";
+      name.className = "book-name";
+      author.className = "book-author";
+      pages.className = "book-pages";
+      read.classList.add("book-button", "read");
+      remove.classList.add("book-button", "remove");
+      remove.textContent = "Remove";
+    })();
+
+    const listeners = (() => {
+      read.addEventListener("click", this.setRead);
+      remove.addEventListener("click", this.removeBook);
+    })();
+
+    const construct = (() => {
+      info.append(name, author, pages);
+      bookCard.append(info, read, remove);
+    })();
+
+    const isRead = () => {
+      if (book.getRead()) {
+        read.classList.remove("red");
+        read.classList.add("green");
+        return "Read";
+      } else {
+        read.classList.remove("green");
+        read.classList.add("red");
+        return "Not read";
+      }
+    };
+
+    name.textContent = book.getTitle();
+    author.textContent = book.getAuthor();
+    pages.textContent = book.getPages();
+    read.textContent = isRead();
+
+    this.main.append(bookCard);
+  }
+
+  static blank() {
     this.main.innerHTML = "";
-    library.books.forEach(function (book) {
-      book.createCard();
+  }
+
+  static updateDOM() {
+    this.blank();
+    library.getBooks().forEach((book) => {
+      this.bookToDOM(book);
     });
-  };
-  addBook(){
-    library.books.push(
-      new Book(
-        this.inputTitle.value,
-        this.inputAuthor.value,
-        +this.inputPages.value,
-        this.isRead
-      )
-    );
-    //library.setBooks();
-  };
+  }
+
+  static removeBook(e){
+    const parent = e.target.parentNode
+    const title = parent.firstChild.firstChild.textContent
+    library.deleteBook(title)
+    parent.remove();
+    //Storage
+    Storage.saveLibrary(library)
+  }
+
+  static setRead =(e)=>{
+    const parent = e.target.parentNode
+    const title = parent.firstChild.firstChild.textContent
+    library.getBook(title).setRead();
+    this.updateDOM()
+    //Storage
+    Storage.saveLibrary(library);
+  }
 }
 
-const library = new Library();
-const display = new Display();
-
-const onload = (function () {
-  //library.getBooks();
-  // library.books.forEach((book) => {
-  //   book.__proto__ = Book.prototype;
-  // });
-  // log(library.books[0])
-  // display.showBook();
+const library = Storage.getLibrary();
+const onload = (() => {
+  DOM.ui();
+  DOM.updateDOM();
 })();
-//------------------------------------------------------------------------------------------------------------------------

@@ -58,6 +58,7 @@ button:active {
   transform: scale(0.9);
 }
 button.add-book {
+  cursor: pointer;
   font-size: 2rem;
   box-shadow: none;
   color: var(--amber-900);
